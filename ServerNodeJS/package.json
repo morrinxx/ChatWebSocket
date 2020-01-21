@@ -1,0 +1,20 @@
+{
+  "name": "10_ws_server_einfach",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc",
+    "tscw": "tsc -w"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ws": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^6.0.4",
+    "typescript": "^3.7.3"
+  }
+}
