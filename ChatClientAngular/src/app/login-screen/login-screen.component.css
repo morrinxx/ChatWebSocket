@@ -1,0 +1,11 @@
+.loginCard {
+  text-align: center;
+  justify-content: center;
+  height: 300px;
+  border-radius: 20px;
+}
+
+.titelMargin {
+  margin-left: 150px;
+  font-size: 35px;
+}
