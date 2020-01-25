@@ -12,14 +12,19 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.Session;
 
+import at.htlleonding.*;
+import at.htlleonding.repository.ChatDBRepository;
+
 @ServerEndpoint("/chat/{username}")
 @ApplicationScoped
 public class ChatSocket {
 
     Map<String, Session> sessions = new ConcurrentHashMap<>();
+    ChatDBRepository dbRepository = new ChatDBRepository();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) {
+        dbRepository.CreateUser("test");
         sessions.put(username, session);
         broadcast("User " + username + " joined");
     }
