@@ -9,6 +9,7 @@ import { MediaMatcher } from "@angular/cdk/layout";
 })
 export class MainPageComponent implements OnDestroy {
   mobileQuery: MediaQueryList;
+  value = "";
 
   fillerNav: string[] = ["Family", "School", "Sports", "Friends"];
 

@@ -28,4 +28,17 @@
       <p>{{ fillerContent }}</p>
     </mat-sidenav-content>
   </mat-sidenav-container>
+  <mat-form-field class="example-form-field">
+    <input matInput type="text" placeholder="Message" [(ngModel)]="value" />
+    <button
+      mat-button
+      *ngIf="value"
+      matSuffix
+      mat-icon-button
+      aria-label="Clear"
+      (click)="value = ''"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
 </div>

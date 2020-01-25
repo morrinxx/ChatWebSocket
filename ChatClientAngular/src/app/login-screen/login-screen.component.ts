@@ -1,4 +1,5 @@
-import { Component, OnInit, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, Output, EventEmitter, Input } from "@angular/core";
+import { User } from ".././user";
 
 @Component({
   selector: "app-login-screen",
@@ -6,12 +7,13 @@ import { Component, OnInit, Output, EventEmitter } from "@angular/core";
   styleUrls: ["./login-screen.component.css"]
 })
 export class LoginScreenComponent implements OnInit {
-  @Output() login: EventEmitter<Boolean> = new EventEmitter<Boolean>();
+  @Input() user: User;
+  @Output() login: EventEmitter<User> = new EventEmitter<User>();
   constructor() {}
 
   ngOnInit() {}
 
   loginIn() {
-    this.login.emit(false);
+    this.login.emit(this.user);
   }
 }
