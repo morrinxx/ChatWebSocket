@@ -1,29 +1,29 @@
 package at.htlleonding.Model;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "ChatUser")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="chatDBSeq")
-    private int id;
+
 
     private String username;
+    private String password;
 
-    public User(String username) {
+    public User(String username, String password) {
         this.username = username;
+        this.password = password;
     }
 
     public User() {
     }
 
-    public int getId() {
-        return id;
+    public String getPassword() {
+        return password;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsernameAndPassword(){
+        return this.username + "_" + this.password;
     }
 
     public String getUsername() {

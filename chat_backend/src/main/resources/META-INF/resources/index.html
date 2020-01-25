@@ -29,6 +29,7 @@
     <br/>
     <div class="row">
         <input id="name" class="col-md-4" type="text" placeholder="your name">
+        <input id="password" class="col-md-4" type="text" placeholder="your password">
         <button id="connect" class="col-md-1 btn btn-primary" type="button">connect</button>
         <br/>
         <br/>
@@ -78,15 +79,19 @@
     var connect = function() {
         if (! connected) {
             var name = $("#name").val();
+            var password = $("#password").val();
             console.log("Val: " + name);
-            socket = new WebSocket("ws://" + location.host + "/chat/" + name);
+            socket = new WebSocket("ws://" + location.host + "/chat/" + name + "_" + password);
             socket.onopen = function() {
-                connected = true;
-                console.log("Connected to the web socket");
-                $("#send").attr("disabled", false);
-                $("#connect").attr("disabled", true);
-                $("#name").attr("disabled", true);
-                $("#msg").focus();
+                if(socket.readyState === WebSocket.OPEN){
+                    connected = true;
+                    console.log("Connected to the web socket");
+                    $("#send").attr("disabled", false);
+                    $("#connect").attr("disabled", true);
+                    $("#name").attr("disabled", true);
+                    $("#msg").focus();
+                }
+
             };
             socket.onmessage =function(m) {
                 console.log("Got message: " + m.data);
