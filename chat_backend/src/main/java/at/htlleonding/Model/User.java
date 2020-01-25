@@ -5,6 +5,7 @@ public class User {
 
     private String username;
     private String password;
+    private Group group;
 
     public User(String username, String password) {
         this.username = username;
@@ -28,6 +29,14 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     public void setUsername(String username) {
