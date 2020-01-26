@@ -25,10 +25,6 @@ import at.htlleonding.Model.User;
 public class ChatSocket {
     private boolean initialized = false;
 
-
-
-
-    Map<User, Session> sessions = new ConcurrentHashMap<>();
     List<User> users = new LinkedList<>();
 
     List<Group> groups = new LinkedList<>();
@@ -40,11 +36,10 @@ public class ChatSocket {
     public void onOpen(Session session, @PathParam("username") String username) {
         if(!initialized)Init();
         if(IsKnown(username)) {
-            String[] split = username.split("_");
-            User newUser = new User(split[0], split[1]);
+            User u = GetByUsername(username);
+            u.setSession(session);
             System.out.println("known user detected");
-            sessions.put(newUser, session);
-            broadcast("User " + newUser.getUsername() + " joined", GetByUsername(username).getGroup());
+            broadcast("User " + u.getUsername() + " joined", u.getGroup());
         }
         else{     //If user is unknown -> connection will be refused
             try {   //Todo not working
@@ -60,32 +55,32 @@ public class ChatSocket {
     @OnClose
     public void onClose(Session session, @PathParam("username") String username) {
         User removeUser = GetByUsername(username);
-        sessions.remove(removeUser);
-        if(IsKnown(username))broadcast("User " + removeUser.getUsername() + " left", GetByUsername(username).getGroup());
+        removeUser.setSession(null);
+        if(IsKnown(username))broadcast("User " + removeUser.getUsername() + " left", removeUser.getGroup());
     }
 
     @OnError
     public void onError(Session session, @PathParam("username") String username, Throwable throwable) {
         User removeUser = GetByUsername(username);
-        sessions.remove(removeUser);
-        broadcast("User " + username + " left on error: " + throwable, GetByUsername(username).getGroup());
+        removeUser.setSession(null);
+        broadcast("User " + username + " left on error: " + throwable, removeUser.getGroup());
     }
 
     @OnMessage
     public void onMessage(String message, @PathParam("username") String username) {
-        broadcast(">> " + username + ": " + message, GetByUsername(username).getGroup());
+        broadcast( GetByUsername(username).getUsername() + ": " + message, GetByUsername(username).getGroup());
     }
 
     private void broadcast(String message, Group g) {
-        List<Session> groupSessions = new LinkedList<>();
-        //Todo message nur an gruppe schicken
-        sessions.values().forEach(s -> {
-            s.getAsyncRemote().sendObject(message, result ->  {
-                if (result.getException() != null) {
-                    System.out.println("Unable to send message: " + result.getException());
-                }
-            });
-        });
+        for(User u : g.getUsers()){
+            if(u.getSession() != null){
+                u.getSession().getAsyncRemote().sendObject(message, sendResult -> {
+                    if (sendResult.getException() != null) {
+                        System.out.println("Unable to send message: " + sendResult.getException());
+                    }
+                });
+            }
+        }
     }
 
     private boolean IsKnown(String username){
@@ -95,7 +90,6 @@ public class ChatSocket {
                 returnBool.set(true);
             }
         });
-        System.out.println(returnBool.get());
         return returnBool.get();
     }
     private User GetByUsername(String username){
@@ -107,6 +101,7 @@ public class ChatSocket {
     }
 
     private void Init() {
+        System.out.println("initializing ...");
         User u1 = new User("a", "a");
         User u2 = new User("b", "b");
         User u3 = new User("c", "c");
@@ -129,7 +124,6 @@ public class ChatSocket {
         u6.setGroup(g3);
         u7.setGroup(g4);
         u8.setGroup(g4);
-
         g1.addUser(u1);
         g1.addUser(u2);
         g2.addUser(u3);
@@ -138,7 +132,6 @@ public class ChatSocket {
         g3.addUser(u6);
         g4.addUser(u7);
         g4.addUser(u8);
-
         users.add(u1);
         users.add(u2);
         users.add(u3);
@@ -151,6 +144,7 @@ public class ChatSocket {
         groups.add(g2);
         groups.add(g3);
         groups.add(g4);
-
+        initialized = true;
+        System.out.println(users.size() + " users added and " + groups.size() + " groups");
     }
 }

@@ -1,11 +1,12 @@
 package at.htlleonding.Model;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Group {
 
     private String name;
-    private List<User> users;
+    private List<User> users = new LinkedList<>();
 
 
     public Group(String name) {

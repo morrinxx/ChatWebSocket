@@ -1,11 +1,14 @@
 package at.htlleonding.Model;
 
+import javax.websocket.Session;
+
 public class User {
 
 
     private String username;
     private String password;
     private Group group;
+    private Session session;
 
     public User(String username, String password) {
         this.username = username;
@@ -41,5 +44,13 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
     }
 }
