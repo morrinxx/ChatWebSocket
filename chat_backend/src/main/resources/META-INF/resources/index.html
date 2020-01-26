@@ -104,7 +104,7 @@
     var sendMessage = function() {
         if (connected) {
             var value = $("#msg").val();
-            var text = '{"type" : "message", "username" : "", "password" : "", "msg" : "' + value + '"}';
+            var text = '{"type" : "message", "username" : "", "password" : "", "msg" : "' + value + '", "group" : "cd"}';
             var s = JSON.stringify(text);
             var o = JSON.parse(s);
 

@@ -1,13 +1,15 @@
 package at.htlleonding.Model;
 
 import javax.websocket.Session;
+import java.util.LinkedList;
+import java.util.List;
 
 public class User {
 
 
     private String username;
     private String password;
-    private Group group;
+    private List<Group> groups = new LinkedList<>();
     private Session session;
 
     public User(String username, String password) {
@@ -34,12 +36,12 @@ public class User {
         return username;
     }
 
-    public Group getGroup() {
-        return group;
+    public List<Group> getGroups() {
+        return groups;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
     }
 
     public void setUsername(String username) {
@@ -52,5 +54,8 @@ public class User {
 
     public void setSession(Session session) {
         this.session = session;
+    }
+    public void addGroup(Group g){
+        this.groups.add(g);
     }
 }

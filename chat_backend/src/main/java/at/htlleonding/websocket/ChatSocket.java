@@ -42,8 +42,7 @@ public class ChatSocket {
         if(IsKnown(username)) {
             User u = GetByUsername(username);
             u.setSession(session);
-            System.out.println("known user detected");
-            broadcast("User " + u.getUsername() + " joined", u.getGroup());
+            System.out.println(u.getUsername() + " is now online");
         }
         else{     //If user is unknown -> connection will be refused
             try {   //Todo not working
@@ -60,14 +59,14 @@ public class ChatSocket {
     public void onClose(Session session, @PathParam("username") String username) {
         User removeUser = GetByUsername(username);
         removeUser.setSession(null);
-        if(IsKnown(username))broadcast("User " + removeUser.getUsername() + " left", removeUser.getGroup());
+        System.out.println(removeUser.getUsername() + " is now offline");
     }
 
     @OnError
     public void onError(Session session, @PathParam("username") String username, Throwable throwable) {
         User removeUser = GetByUsername(username);
         removeUser.setSession(null);
-        broadcast("User " + username + " left on error: " + throwable, removeUser.getGroup());
+        System.out.println(removeUser.getUsername() + "just left because of an error: " + throwable.getMessage());
     }
 
     @OnMessage
@@ -75,13 +74,22 @@ public class ChatSocket {
         System.out.println(message);
         Gson g = new Gson();
         Message m = g.fromJson(message, Message.class);
+        List<Group> groupsSendingTo = new LinkedList<>();
         System.out.println(m.getMsg());
-        broadcast( GetByUsername(username).getUsername() + ": " + message, GetByUsername(username).getGroup());
+        broadcast( GetByUsername(username).getUsername() + ": " + m.getMsg(), GetGroupFromString(m.getGroup()));
+    }
+
+    private Group GetGroupFromString(String stringGroup) {
+        for(Group g : groups){
+            if(g.getName().equals(stringGroup))return g;
+        }
+        System.out.println("Gruppe nicht gefunden!");
+        return null;
     }
 
     private void broadcast(String message, Group g) {
-        for(User u : g.getUsers()){
-            if(u.getSession() != null){
+        for (User u : g.getUsers()) {
+            if (u.getSession() != null) {
                 u.getSession().getAsyncRemote().sendObject(message, sendResult -> {
                     if (sendResult.getException() != null) {
                         System.out.println("Unable to send message: " + sendResult.getException());
@@ -89,6 +97,7 @@ public class ChatSocket {
                 });
             }
         }
+
     }
 
     private boolean IsKnown(String username){
@@ -124,16 +133,20 @@ public class ChatSocket {
         Group g3 = new Group("ef");
         Group g4 = new Group("gh");
 
-        u1.setGroup(g1);
-        u2.setGroup(g1);
-        u3.setGroup(g2);
-        u4.setGroup(g2);
-        u5.setGroup(g3);
-        u6.setGroup(g3);
-        u7.setGroup(g4);
-        u8.setGroup(g4);
+        u1.addGroup(g1);
+        u1.addGroup(g2);
+        u2.addGroup(g1);
+        u2.addGroup(g2);
+        u3.addGroup(g2);
+        u4.addGroup(g2);
+        u5.addGroup(g3);
+        u6.addGroup(g3);
+        u7.addGroup(g4);
+        u8.addGroup(g4);
         g1.addUser(u1);
         g1.addUser(u2);
+        g2.addUser(u1);
+        g2.addUser(u2);
         g2.addUser(u3);
         g2.addUser(u4);
         g3.addUser(u5);
