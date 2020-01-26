@@ -1,5 +1,5 @@
 <div class="centerDiv" *ngIf="check">
-  <app-login-screen (login)="logedIn(bool)"></app-login-screen>
+  <app-login-screen [user]="user" (login)="logedIn(user)"></app-login-screen>
 </div>
 <div *ngIf="!check">
   <app-main-page></app-main-page>
