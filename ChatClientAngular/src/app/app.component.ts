@@ -49,7 +49,10 @@ export class AppComponent {
         this.user.password
     );
     //onOpen
-    this.websocket.onopen = evt => (this.loginSuccess = true);
+    this.websocket.onopen = evt => {
+      this.loginSuccess = true;
+      console.log("LKADJFLKASJDLKASJDLK")
+    };
     //onMessage
     this.websocket.onmessage = evt => {
       this.logBuffer += evt.data + "\n";
