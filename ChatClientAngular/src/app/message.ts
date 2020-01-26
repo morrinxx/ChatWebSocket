@@ -3,7 +3,7 @@ export class Message {
     public type: string,
     public username: string,
     public password: string,
-    public group: string,
-    public text: string
+    public msg: string,
+    public group: string
   ) {}
 }

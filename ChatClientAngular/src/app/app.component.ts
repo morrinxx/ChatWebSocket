@@ -35,8 +35,8 @@ export class AppComponent {
       "message",
       this.user.username,
       this.user.password,
-      text,
-      this.sendToGroup
+      this.sendToGroup,
+      text
     );
     this.websocket.send(JSON.stringify(message));
   }
@@ -51,7 +51,11 @@ export class AppComponent {
     //onOpen
     this.websocket.onopen = evt => {
       this.loginSuccess = true;
+<<<<<<< Updated upstream
       console.log("LKADJFLKASJDLKASJDLK")
+=======
+      console.log(this.loginSuccess);
+>>>>>>> Stashed changes
     };
     //onMessage
     this.websocket.onmessage = evt => {
