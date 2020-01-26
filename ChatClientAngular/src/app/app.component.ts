@@ -51,11 +51,7 @@ export class AppComponent {
     //onOpen
     this.websocket.onopen = evt => {
       this.loginSuccess = true;
-<<<<<<< Updated upstream
-      console.log("LKADJFLKASJDLKASJDLK")
-=======
-      console.log(this.loginSuccess);
->>>>>>> Stashed changes
+      console.log("LKADJFLKASJDLKASJDLKsdf");
     };
     //onMessage
     this.websocket.onmessage = evt => {
