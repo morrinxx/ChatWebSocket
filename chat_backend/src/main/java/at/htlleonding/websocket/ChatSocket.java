@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.json.JsonObject;
+import javax.json.JsonPatch;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -18,7 +20,9 @@ import javax.websocket.server.ServerEndpoint;
 import javax.websocket.Session;
 
 import at.htlleonding.Model.Group;
+import at.htlleonding.Model.Message;
 import at.htlleonding.Model.User;
+import com.google.gson.Gson;
 
 @ServerEndpoint("/chat/{username}")
 @ApplicationScoped
@@ -68,6 +72,10 @@ public class ChatSocket {
 
     @OnMessage
     public void onMessage(String message, @PathParam("username") String username) {
+        System.out.println(message);
+        Gson g = new Gson();
+        Message m = g.fromJson(message, Message.class);
+        System.out.println(m.getMsg());
         broadcast( GetByUsername(username).getUsername() + ": " + message, GetByUsername(username).getGroup());
     }
 

@@ -104,8 +104,12 @@
     var sendMessage = function() {
         if (connected) {
             var value = $("#msg").val();
+            var text = '{"type" : "message", "username" : "", "password" : "", "msg" : "' + value + '"}';
+            var s = JSON.stringify(text);
+            var o = JSON.parse(s);
+
             console.log("Sending " + value);
-            socket.send(value);
+            socket.send(o);
             $("#msg").val("");
         }
     };
