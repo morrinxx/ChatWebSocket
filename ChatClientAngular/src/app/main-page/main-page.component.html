@@ -14,21 +14,27 @@
       class="sideNav"
     >
       <mat-nav-list>
-        <a
-          mat-list-item
-          routerLink="."
-          *ngFor="let nav of fillerNav"
-          class="listItems"
-          [routerLink]="['/group']"
-          (click)="clicked(nav)"
-          >{{ nav }}<mat-divider></mat-divider
-        ></a>
+        <div *ngIf="!check">
+          <a
+            mat-list-item
+            *ngFor="let nav of fillerNav"
+            class="listItems"
+            [routerLink]="['/group']"
+            (click)="clicked(nav)"
+            >{{ nav }}<mat-divider></mat-divider
+          ></a>
+        </div>
       </mat-nav-list>
+      <a [routerLink]="['/main']" (click)="check = false"
+        ><button mat-button *ngIf="check">Return to Groups</button></a
+      >
     </mat-sidenav>
 
     <mat-sidenav-content>
-      <p *ngIf="!check">Select a Group!</p>
-      <router-outlet *ngIf="check"></router-outlet>
+      <div class="divStyle">
+        <p *ngIf="!check">Select a Group!</p>
+        <router-outlet *ngIf="check"></router-outlet>
+      </div>
     </mat-sidenav-content>
   </mat-sidenav-container>
   <mat-form-field class="form-field">

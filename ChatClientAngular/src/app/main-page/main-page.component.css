@@ -44,3 +44,7 @@ h1.app-name {
   font-size: 20px;
   background-color: whitesmoke;
 }
+
+.divStyle {
+  margin-left: 20px;
+}
