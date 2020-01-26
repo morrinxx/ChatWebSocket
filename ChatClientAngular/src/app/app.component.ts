@@ -11,33 +11,52 @@ export class AppComponent {
   title = "ChatClientAngular";
   user: User = new User("", "", false);
   check: Boolean = true;
-  wsUri: string = "ws://localhost:8025/websockets/whatsapp";
+  wsUri: string = "ws://localhost:8080/chat/";
   websocket: WebSocket;
   sendToGroup: string = "school";
   logBuffer: string = "";
   inMessages: Array<Message> = [];
   myGroups: Array<String> = ["school", "family", "sports", "friends"];
+  loginSuccess: Boolean;
 
   logedIn(newUser: User) {
     this.user = newUser;
-    this.check = this.user.switchOver;
+    this.doConnect();
+    if (!this.loginSuccess) {
+      alert("Username or Password is wrong!");
+    } else {
+      this.check = this.user.switchOver;
+    }
+  }
+
+  doSend(group, text): void {
+    this.sendToGroup = group;
+    let message: Message = new Message(
+      "message",
+      this.user.username,
+      this.user.password,
+      text,
+      this.sendToGroup
+    );
+    this.websocket.send(JSON.stringify(message));
   }
 
   doConnect() {
-    this.websocket = new WebSocket(this.wsUri);
+    this.websocket = new WebSocket(
+      "ws://localhost:8080/chat/" +
+        this.user.username +
+        "_" +
+        this.user.password
+    );
     //onOpen
-    this.websocket.onopen = evt => (this.logBuffer += "Websocket connected\n");
+    this.websocket.onopen = evt => (this.loginSuccess = true);
     //onMessage
     this.websocket.onmessage = evt => {
       this.logBuffer += evt.data + "\n";
       let message: Message = JSON.parse(evt.data);
       // data message recieved
-      if (message.typ == "data") {
+      if (message.type == "message") {
         this.inMessages.push(message);
-      }
-      // groups message recieved
-      else if (message.typ == "groups") {
-        this.myGroups = message.value;
       }
     };
     //onError
@@ -48,15 +67,5 @@ export class AppComponent {
 
   doDisconnect(): void {
     this.websocket.close();
-  }
-
-  doLogin() {
-    this.websocket.send(
-      '{"typ":"login", "username":"' +
-        this.user.username +
-        '", "password":"' +
-        this.user.password +
-        '"}'
-    );
   }
 }

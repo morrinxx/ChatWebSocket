@@ -1,9 +1,9 @@
 export class Message {
   constructor(
-    public typ: string,
-    public sender: string,
+    public type: string,
+    public username: string,
+    public password: string,
     public group: string,
-    public payload: string,
-    public value: string[]
+    public text: string
   ) {}
 }
