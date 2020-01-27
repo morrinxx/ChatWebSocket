@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { User } from "./user";
 import { Message } from "./message";
+import { DataService } from "./data-service.service";
 
 @Component({
   selector: "app-root",
@@ -11,33 +12,45 @@ export class AppComponent {
   title = "ChatClientAngular";
   user: User = new User("", "", false);
   check: Boolean = true;
-  wsUri: string = "ws://localhost:8080/chat/";
-  websocket: WebSocket;
+  wsUri: string = "ws://localhost:8080/chat/a_a";
+  websocket: WebSocket = new WebSocket(this.wsUri);
   sendToGroup: string = "school";
   logBuffer: string = "";
   inMessages: Array<Message> = [];
   myGroups: Array<String> = ["school", "family", "sports", "friends"];
-  loginSuccess: Boolean;
+  loginSuccess: Boolean = false;
+
+  constructor(public dataservice?: DataService) {}
 
   logedIn(newUser: User) {
     this.user = newUser;
     this.doConnect();
-    if (!this.loginSuccess) {
-      alert("Username or Password is wrong!");
-    } else {
-      this.check = this.user.switchOver;
-    }
+    this.delay(200);
+  }
+
+  async delay(ms: number) {
+    await new Promise(resolve => setTimeout(() => resolve(), ms)).then(() => {
+      if (!this.loginSuccess) {
+        alert("Username or Password is wrong!");
+      } else {
+        this.check = this.user.switchOver;
+      }
+    });
   }
 
   doSend(group, text): void {
-    this.sendToGroup = group;
+    console.log(group);
+    console.log(this.dataservice.group);
+    this.sendToGroup = this.dataservice.group;
     let message: Message = new Message(
       "message",
       this.user.username,
       this.user.password,
-      this.sendToGroup,
-      text
+      text,
+      this.sendToGroup
     );
+    this.inMessages.push(message);
+    this.dataservice.Messages = this.inMessages;
     this.websocket.send(JSON.stringify(message));
   }
 
@@ -51,7 +64,6 @@ export class AppComponent {
     //onOpen
     this.websocket.onopen = evt => {
       this.loginSuccess = true;
-      console.log("LKADJFLKASJDLKASJDLKsdf");
     };
     //onMessage
     this.websocket.onmessage = evt => {
@@ -60,6 +72,7 @@ export class AppComponent {
       // data message recieved
       if (message.type == "message") {
         this.inMessages.push(message);
+        this.dataservice.Messages = this.inMessages;
       }
     };
     //onError

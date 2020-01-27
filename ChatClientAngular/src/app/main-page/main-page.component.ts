@@ -14,7 +14,7 @@ export class MainPageComponent implements OnDestroy {
   mobileQuery: MediaQueryList;
   value = "";
   check = false;
-  ac: AppComponent = new AppComponent();
+  ac: AppComponent = new AppComponent(this.dataservice);
 
   fillerNav: string[] = ["Family", "School", "Sports", "Friends"];
 

@@ -76,7 +76,8 @@ public class ChatSocket {
         Message m = g.fromJson(message, Message.class);
         List<Group> groupsSendingTo = new LinkedList<>();
         System.out.println(m.getMsg());
-        broadcast( GetByUsername(username).getUsername() + ": " + m.getMsg(), GetGroupFromString(m.getGroup()));
+        System.out.println(message);
+        broadcast( message, GetGroupFromString(m.getGroup()));
     }
 
     private Group GetGroupFromString(String stringGroup) {

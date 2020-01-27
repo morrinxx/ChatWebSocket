@@ -106,8 +106,9 @@
             var value = $("#msg").val();
             var text = '{"type" : "message", "username" : "", "password" : "", "msg" : "' + value + '", "group" : "cd"}';
             var s = JSON.stringify(text);
+            console.log(s);
             var o = JSON.parse(s);
-
+            console.log(o);
             console.log("Sending " + value);
             socket.send(o);
             $("#msg").val("");

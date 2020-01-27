@@ -37,7 +37,7 @@
       </div>
     </mat-sidenav-content>
   </mat-sidenav-container>
-  <mat-form-field class="form-field">
+  <mat-form-field class="form-field" *ngIf="dataservice.group != null">
     <input matInput type="text" placeholder="Message" [(ngModel)]="value" />
     <button
       mat-button
