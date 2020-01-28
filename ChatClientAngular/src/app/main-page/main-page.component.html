@@ -1,9 +1,26 @@
 <div class="container" [class.is-mobile]="mobileQuery.matches">
   <mat-toolbar color="primary" class="toolbar">
-    <button mat-icon-button (click)="snav.toggle()">
+    <button
+      mat-icon-button
+      (click)="snav.toggle()"
+      *ngIf="!check"
+      class="iconsStyle"
+    >
       <mat-icon>menu</mat-icon>
     </button>
-    <h1 class="app-name">Group Chats</h1>
+    <a [routerLink]="['/main']" (click)="check = false"
+      ><button
+        mat-button
+        *ngIf="check"
+        (click)="checkM = false"
+        class="iconsStyle"
+        (click)="snav.toggle()"
+      >
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button></a
+    >
+    <h1 class="app-name" *ngIf="check">{{ dataservice.group }}</h1>
+    <h1 class="app-name" *ngIf="!check">Group Chats</h1>
   </mat-toolbar>
 
   <mat-sidenav-container class="sidenav-container">
@@ -12,6 +29,7 @@
       [mode]="mobileQuery.matches ? 'over' : 'side'"
       [fixedInViewport]="mobileQuery.matches"
       class="sideNav"
+      [opened]="true"
     >
       <mat-nav-list>
         <div *ngIf="!check">
@@ -21,13 +39,11 @@
             class="listItems"
             [routerLink]="['/group']"
             (click)="clicked(nav)"
+            (click)="snav.toggle()"
             >{{ nav }}<mat-divider></mat-divider
           ></a>
         </div>
       </mat-nav-list>
-      <a [routerLink]="['/main']" (click)="check = false"
-        ><button mat-button *ngIf="check">Return to Groups</button></a
-      >
     </mat-sidenav>
 
     <mat-sidenav-content>
@@ -37,14 +53,22 @@
       </div>
     </mat-sidenav-content>
   </mat-sidenav-container>
-  <mat-form-field class="form-field" *ngIf="dataservice.group != null">
-    <input matInput type="text" placeholder="Message" [(ngModel)]="value" />
+  <mat-form-field class="form-field" *ngIf="checkM">
+    <input
+      matInput
+      type="text"
+      placeholder="Message"
+      (keyup.enter)="sendMsg()"
+      (keyup.enter)="value = ''"
+      [(ngModel)]="value"
+    />
     <button
       mat-button
       *ngIf="value"
       matSuffix
       mat-icon-button
       (click)="sendMsg()"
+      (click)="value = ''"
     >
       <mat-icon>send</mat-icon>
     </button>

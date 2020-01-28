@@ -1,5 +1,8 @@
 <div class="centerDiv" *ngIf="check">
-  <app-login-screen [user]="user" (login)="logedIn(user)"></app-login-screen>
+  <app-login-screen
+    [user]="dataservice.user"
+    (login)="logedIn(dataservice.user)"
+  ></app-login-screen>
 </div>
 <div *ngIf="!check">
   <app-main-page></app-main-page>

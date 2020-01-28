@@ -1,3 +1,30 @@
-<p *ngFor="let content of messages">
-  {{ content.username }}: {{ content.msg }}
-</p>
+<div *ngFor="let content of messages">
+  <mat-list>
+    <h3
+      mat-subheader
+      class="usernameStyle"
+      *ngIf="dataservice.user.username != content.username"
+    >
+      {{ content.username }}
+    </h3>
+    <mat-list-item
+      class="contentStyle"
+      *ngIf="dataservice.user.username != content.username"
+    >
+      {{ content.msg }}
+    </mat-list-item>
+    <h3
+      mat-subheader
+      class="ownUsernameStyle"
+      *ngIf="dataservice.user.username == content.username"
+    >
+      {{ content.username }}
+    </h3>
+    <mat-list-item
+      class="ownContentStyle"
+      *ngIf="dataservice.user.username == content.username"
+    >
+      {{ content.msg }}
+    </mat-list-item>
+  </mat-list>
+</div>

@@ -10,10 +10,9 @@ import { DataService } from "./data-service.service";
 })
 export class AppComponent {
   title = "ChatClientAngular";
-  user: User = new User("", "", false);
+  ip: String = "localhost";
   check: Boolean = true;
-  wsUri: string = "ws://localhost:8080/chat/a_a";
-  websocket: WebSocket = new WebSocket(this.wsUri);
+  wsUri: string = "ws://" + this.ip + ":8080/chat/";
   sendToGroup: string = "school";
   logBuffer: string = "";
   inMessages: Array<Message> = [];
@@ -23,52 +22,61 @@ export class AppComponent {
   constructor(public dataservice?: DataService) {}
 
   logedIn(newUser: User) {
-    this.user = newUser;
+    this.dataservice.user = newUser;
     this.doConnect();
     this.delay(200);
   }
 
   async delay(ms: number) {
     await new Promise(resolve => setTimeout(() => resolve(), ms)).then(() => {
+      if(this.dataservice.websocket.readyState == 3){
+        this.loginSuccess = false;
+      }
       if (!this.loginSuccess) {
         alert("Username or Password is wrong!");
       } else {
-        this.check = this.user.switchOver;
+        this.check = this.dataservice.user.switchOver;
       }
     });
   }
 
   doSend(group, text): void {
-    console.log(group);
-    console.log(this.dataservice.group);
+    console.log(this.dataservice.websocket);
     this.sendToGroup = this.dataservice.group;
+    console.log(this.dataservice.user.username);
     let message: Message = new Message(
       "message",
-      this.user.username,
-      this.user.password,
+      this.dataservice.user.username,
+      this.dataservice.user.password,
       text,
       this.sendToGroup
     );
+    console.log(message);
     this.inMessages.push(message);
     this.dataservice.Messages = this.inMessages;
-    this.websocket.send(JSON.stringify(message));
+    this.dataservice.websocket.send(JSON.stringify(message));
   }
 
   doConnect() {
-    this.websocket = new WebSocket(
-      "ws://localhost:8080/chat/" +
-        this.user.username +
+    this.dataservice.websocket = new WebSocket(
+      "ws://" +
+        this.ip +
+        ":8080/chat/" +
+        this.dataservice.user.username +
         "_" +
-        this.user.password
+        this.dataservice.user.password
     );
+    console.log(this.dataservice.websocket);
+    console.log(this.dataservice.user.username);
     //onOpen
-    this.websocket.onopen = evt => {
+    this.dataservice.websocket.onopen = evt => {
       this.loginSuccess = true;
     };
     //onMessage
-    this.websocket.onmessage = evt => {
+    this.dataservice.websocket.onmessage = evt => {
       this.logBuffer += evt.data + "\n";
       let message: Message = JSON.parse(evt.data);
+      console.log(message);
       // data message recieved
       if (message.type == "message") {
         this.inMessages.push(message);
@@ -76,12 +84,13 @@ export class AppComponent {
       }
     };
     //onError
-    this.websocket.onerror = evt => (this.logBuffer += "Error\n");
+    this.dataservice.websocket.onerror = evt => console.log("error");
     //onClose
-    this.websocket.onclose = evt => (this.logBuffer += "Websocket closed\n");
+    this.dataservice.websocket.onclose = evt =>
+      (this.logBuffer += "Websocket closed\n");
   }
 
   doDisconnect(): void {
-    this.websocket.close();
+    this.dataservice.websocket.close();
   }
 }

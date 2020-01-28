@@ -14,9 +14,10 @@ export class MainPageComponent implements OnDestroy {
   mobileQuery: MediaQueryList;
   value = "";
   check = false;
+  checkM = false;
   ac: AppComponent = new AppComponent(this.dataservice);
 
-  fillerNav: string[] = ["Family", "School", "Sports", "Friends"];
+  fillerNav: string[] = ["cd", "cd", "cd", "cd"];
 
   private _mobileQueryListener: () => void;
 
@@ -37,6 +38,7 @@ export class MainPageComponent implements OnDestroy {
   clicked(nav: string) {
     this.dataservice.group = nav;
     this.check = true;
+    this.checkM = true;
   }
 
   sendMsg() {

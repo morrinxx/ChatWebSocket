@@ -40,12 +40,14 @@ public class ChatSocket {
     public void onOpen(Session session, @PathParam("username") String username) {
         if(!initialized)Init();
         if(IsKnown(username)) {
+            System.out.println("known");
             User u = GetByUsername(username);
             u.setSession(session);
             System.out.println(u.getUsername() + " is now online");
         }
         else{     //If user is unknown -> connection will be refused
-            try {   //Todo not working
+            System.out.println("Connection to " + username + " refused");
+            try {
                 session.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -57,6 +59,7 @@ public class ChatSocket {
 
     @OnClose
     public void onClose(Session session, @PathParam("username") String username) {
+        System.out.println("onclose called");
         User removeUser = GetByUsername(username);
         removeUser.setSession(null);
         System.out.println(removeUser.getUsername() + " is now offline");
@@ -64,9 +67,7 @@ public class ChatSocket {
 
     @OnError
     public void onError(Session session, @PathParam("username") String username, Throwable throwable) {
-        User removeUser = GetByUsername(username);
-        removeUser.setSession(null);
-        System.out.println(removeUser.getUsername() + "just left because of an error: " + throwable.getMessage());
+        System.out.println(username + " had an error " + throwable.getMessage());
     }
 
     @OnMessage
@@ -102,13 +103,10 @@ public class ChatSocket {
     }
 
     private boolean IsKnown(String username){
-        AtomicBoolean returnBool = new AtomicBoolean(false);
-        users.forEach(u ->{
-            if(u.getUsernameAndPassword().equals(username)){
-                returnBool.set(true);
-            }
-        });
-        return returnBool.get();
+        for(User u : users){
+            if(u.getUsernameAndPassword().equals(username))return true;
+        }
+        return false;
     }
     private User GetByUsername(String username){
         for(User u : users){
