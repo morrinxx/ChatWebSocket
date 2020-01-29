@@ -1,11 +1,11 @@
 package Model;
 
+import javax.persistence.Entity;
 import javax.websocket.Session;
 import java.util.LinkedList;
 import java.util.List;
 
 public class User {
-
 
     private String username;
     private String password;

@@ -37,12 +37,12 @@ public class ChatWebSocket
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) {
         if(!initialized)Init();
-        dbRepository.createUser();
         if(IsKnown(username)) {
             System.out.println("known");
             User u = GetByUsername(username);
             u.setSession(session);
             System.out.println(u.getUsername() + " is now online");
+            //initialBroadcast(u);
         }
         else{     //If user is unknown -> connection will be refused
             System.out.println("Connection to " + username + " refused");
@@ -74,9 +74,7 @@ public class ChatWebSocket
         System.out.println(message);
         Gson g = new Gson();
         Message m = g.fromJson(message, Message.class);
-        List<Group> groupsSendingTo = new LinkedList<>();
-        System.out.println(m.getMsg());
-        System.out.println(message);
+        dbRepository.addMessage(m);
         broadcast( message, GetGroupFromString(m.getGroup()));
     }
 
@@ -98,9 +96,21 @@ public class ChatWebSocket
                 });
             }
         }
-
     }
+/*
+    private void initialBroadcast(User u){
+        List<Message> messages = dbRepository.getMessages(u.getGroups());
 
+        for(Message m : messages){
+            System.out.println("halla");
+            u.getSession().getAsyncRemote().sendObject(m, sendResult -> {
+                if (sendResult.getException() != null) {
+                    System.out.println("Unable to send message history from " + u.getUsername() + " with result:  " + sendResult.getException());
+                }
+            });
+        }
+    }
+*/
     private boolean IsKnown(String username){
         for(User u : users){
             if(u.getUsernameAndPassword().equals(username))return true;
