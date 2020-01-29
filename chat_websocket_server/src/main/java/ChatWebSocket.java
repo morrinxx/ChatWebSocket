@@ -3,7 +3,6 @@ import Model.Message;
 import Model.User;
 import com.google.gson.Gson;
 import htlleonding.Repository.ChatDBRepository;
-import javafx.application.Platform;
 
 import java.io.IOException;
 import java.util.LinkedList;
