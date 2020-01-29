@@ -37,7 +37,8 @@ public class ChatDBRepository {
         return CompletableFuture.supplyAsync(() -> {
             System.out.println("Getting Messages Async");
 
-            performGetMessages(stringsGroup);
+            List<Message> list = performGetMessages(stringsGroup);
+            messageList = list;
             return null;
         }, executor);
     }
@@ -54,14 +55,19 @@ public class ChatDBRepository {
         em.persist(m);
     }
 
-    private void performGetMessages(String[] stringsGroup){
+    private List<Message> performGetMessages(String[] stringsGroup){
         System.out.println("in performGetMessges");
         javax.persistence.criteria.CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
         cq.select(cq.from(Message.class));
-        messageList = em.createQuery(cq).getResultList();
-        for(Message m : messageList ){
+        List<Message> returnList = em.createQuery(cq).getResultList();
+        for(Message m : returnList ){
             System.out.println(m.getMsg());
         }
         System.out.println("HALAHLAHLAHLAH");
+        return returnList;
+    }
+
+    public EntityManager getEntityManager() {
+        return em;
     }
 }

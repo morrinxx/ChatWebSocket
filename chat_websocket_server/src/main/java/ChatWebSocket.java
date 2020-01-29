@@ -3,10 +3,13 @@ import Model.Message;
 import Model.User;
 import com.google.gson.Gson;
 import htlleonding.Repository.ChatDBRepository;
+import htlleonding.Repository.DbReaderObserverThread;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -22,7 +25,7 @@ import javax.websocket.Session;
 
 @ServerEndpoint("/chat/{username}")
 @ApplicationScoped
-public class ChatWebSocket
+public class ChatWebSocket implements Observer
 {
     private boolean initialized = false;
 
@@ -31,6 +34,10 @@ public class ChatWebSocket
     List<Group> groups = new LinkedList<>();
 
     List<String> messages = new LinkedList<>();
+
+    Thread thread;
+    @Inject
+    DbReaderObserverThread runnable;
 
     @Inject
     ChatDBRepository dbRepository;
@@ -43,7 +50,7 @@ public class ChatWebSocket
             User u = GetByUsername(username);
             u.setSession(session);
             System.out.println(u.getUsername() + " is now online");
-            SendMessageHistory(u);
+            startMessageImport();
         }
         else{     //If user is unknown -> connection will be refused
             System.out.println("Connection to " + username + " refused");
@@ -55,15 +62,12 @@ public class ChatWebSocket
         }
     }
 
-
-
     @OnClose
     public void onClose(Session session, @PathParam("username") String username) {
         System.out.println("onclose called");
         User removeUser = GetByUsername(username);
         removeUser.setSession(null);
         System.out.println(removeUser.getUsername() + " is now offline");
-        SendMessageHistory(removeUser);
     }
 
     @OnError
@@ -100,37 +104,15 @@ public class ChatWebSocket
             }
         }
     }
-/*
-    private void initialBroadcast(User u){
-        List<Message> messages = dbRepository.getMessages(u.getGroups());
 
+    private void messageHistoryBroadcast(List<Message> messages){
         for(Message m : messages){
             System.out.println("halla");
-            u.getSession().getAsyncRemote().sendObject(m, sendResult -> {
+            users.get(1).getSession().getAsyncRemote().sendObject(m, sendResult -> {
                 if (sendResult.getException() != null) {
-                    System.out.println("Unable to send message history from " + u.getUsername() + " with result:  " + sendResult.getException());
+                    System.out.println("Unable to send message history from MessageHistory with result:  " + sendResult.getException());
                 }
             });
-        }
-    }*/
-
-    private void SendMessageHistory(User u){
-        //dbRepository.getMessageHistory(u.getGroups());
-
-        System.out.println(messages.size() + " messages");
-        if(u.getSession() == null) System.out.println("session is null");
-        for(String m : messages){
-            Gson gson = new Gson();
-            Message message = gson.fromJson(m, Message.class);
-            for(Group g : u.getGroups()){
-                if(g.getName().equals(message.getGroup())){
-                    u.getSession().getAsyncRemote().sendObject(m, sendResult -> {
-                        if(sendResult.getException() != null){
-                            System.out.println("Error on MessageHistory");
-                        }
-                    });
-                }
-            }
         }
     }
 
@@ -196,5 +178,18 @@ public class ChatWebSocket
         groups.add(g3);
         initialized = true;
         System.out.println(users.size() + " users added and " + groups.size() + " groups");
+    }
+
+    private void startMessageImport() {
+        runnable = new DbReaderObserverThread(dbRepository.getEntityManager());
+        runnable.addObserver(this);
+        thread = new Thread(runnable);
+        thread.start();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        List<Message> messageHistory = (List<Message>) arg;
+        messageHistoryBroadcast(messageHistory);
     }
 }
