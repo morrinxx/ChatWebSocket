@@ -152,52 +152,48 @@ public class ChatWebSocket
 
     private void Init() {
         System.out.println("initializing ...");
-        User u1 = new User("a", "a");
-        User u2 = new User("b", "b");
-        User u3 = new User("c", "c");
-        User u4 = new User("d", "d");
-        User u5 = new User("e", "e");
-        User u6 = new User("f", "f");
-        User u7 = new User("g", "g");
-        User u8 = new User("h", "h");
+        User u1 = new User("Anton", "a");
+        User u2 = new User("Franz", "f");
+        User u3 = new User("Peter", "p");
+        User u4 = new User("Hans", "h");
 
-        Group g1 = new Group("ab");
-        Group g2 = new Group("cd");
-        Group g3 = new Group("ef");
-        Group g4 = new Group("gh");
+
+        Group g1 = new Group("Family");
+        Group g2 = new Group("School");
+        Group g3 = new Group("Friends");
 
         u1.addGroup(g1);
         u1.addGroup(g2);
+        u1.addGroup(g3);
         u2.addGroup(g1);
         u2.addGroup(g2);
+        u2.addGroup(g3);
+        u3.addGroup(g1);
         u3.addGroup(g2);
+        u3.addGroup(g3);
+        u4.addGroup(g1);
         u4.addGroup(g2);
-        u5.addGroup(g3);
-        u6.addGroup(g3);
-        u7.addGroup(g4);
-        u8.addGroup(g4);
+        u4.addGroup(g3);
         g1.addUser(u1);
         g1.addUser(u2);
+        g1.addUser(u3);
+        g1.addUser(u4);
         g2.addUser(u1);
         g2.addUser(u2);
         g2.addUser(u3);
         g2.addUser(u4);
-        g3.addUser(u5);
-        g3.addUser(u6);
-        g4.addUser(u7);
-        g4.addUser(u8);
+        g3.addUser(u1);
+        g3.addUser(u2);
+        g3.addUser(u3);
+        g3.addUser(u4);
+
         users.add(u1);
         users.add(u2);
         users.add(u3);
         users.add(u4);
-        users.add(u5);
-        users.add(u6);
-        users.add(u7);
-        users.add(u8);
         groups.add(g1);
         groups.add(g2);
         groups.add(g3);
-        groups.add(g4);
         initialized = true;
         System.out.println(users.size() + " users added and " + groups.size() + " groups");
     }

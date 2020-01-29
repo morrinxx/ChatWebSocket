@@ -17,7 +17,7 @@ export class MainPageComponent implements OnDestroy {
   checkM = false;
   ac: AppComponent = new AppComponent(this.dataservice);
 
-  fillerNav: string[] = ["cd", "cd", "cd", "cd"];
+  fillerNav: string[] = ["Family", "School", "Friends"];
 
   private _mobileQueryListener: () => void;
 
