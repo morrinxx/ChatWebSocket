@@ -5,10 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
-@Table(name = "Message")
-//@NamedQuery(name = Message.GET_MESSAGES, query = "select m from Message m ")
 public class Message {
-    //public static final String GET_MESSAGES = "Message.get_messages";
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "chatSeq")

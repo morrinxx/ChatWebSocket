@@ -16,51 +16,61 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @ApplicationScoped
+@Transactional
 public class ChatDBRepository {
     @Inject
     EntityManager em;
 
     private final Executor executor = Executors.newSingleThreadExecutor();
     private List<Message> messageList = new LinkedList<>();
-/*
-    @Transactional
+    /*
     public List<Message> getMessages(List<Group> groups){
         String[] stringsGroup = new String[groups.size()];
         for (int i = 0; i < groups.size(); i++) {
             stringsGroup[i] = groups.get(i).getName();
         }
-        CompletableFuture.supplyAsync(() ->{
+        CompletableFuture.supplyAsync(() -> {
+                    System.out.println("Getting Messages Async");
+                });
+
+
+
+    public CompletionStage<Void> getMessageHistory(List<Group> groups) {
+        System.out.println("GetMessageHistory called");
+        String[] stringsGroup = new String[groups.size()];
+        for (int i = 0; i < groups.size(); i++) {
+            stringsGroup[i] = groups.get(i).getName();
+        }
+        return CompletableFuture.supplyAsync(() -> {
             System.out.println("Getting Messages Async");
 
-            messageList = performGetMessages(stringsGroup);
+            performGetMessages(stringsGroup);
             return null;
         }, executor);
-        return messageList;
     }*/
 
-    @Transactional
     public CompletionStage<Void> addMessage(Message m) {
         return CompletableFuture.supplyAsync(() ->{
-            System.out.println("Adding Message Async");
-
-            performeInsert(m);
+            System.out.println("Adding message async");
+            performInsert(m);
             return null;
         }, executor);
     }
-    /*
-    @Transactional
-    private List<Message> performGetMessages(String[] stringsGroup){
-        TypedQuery<Message> query = em.createNamedQuery(Message.GET_MESSAGES, Message.class);
-        query.setParameter("groups", stringsGroup);
+
+    public void performInsert(Message m){
+        em.persist(m);
+    }
+
+    private void performGetMessages(String[] stringsGroup){
+        System.out.println("in performGetMessges");
+        TypedQuery<Message> query = em.createQuery("select m from Message m", Message.class);
+        System.out.println("halla");
+        //query.setParameter("groups", stringsGroup);
         List<Message> result = query.getResultList();
         for(Message m : result ){
             System.out.println(m.getMsg());
         }
-        return result;
-    }
-*/
-    @Transactional
-    private void performeInsert(Message m){
-        em.merge(m);
+        messageList = result;
+        System.out.println("HALAHLAHLAHLAH");
     }
 }

@@ -31,6 +31,8 @@ public class ChatWebSocket
 
     List<Group> groups = new LinkedList<>();
 
+    List<String> messages = new LinkedList<>();
+
     @Inject
     ChatDBRepository dbRepository;
 
@@ -42,7 +44,7 @@ public class ChatWebSocket
             User u = GetByUsername(username);
             u.setSession(session);
             System.out.println(u.getUsername() + " is now online");
-            //initialBroadcast(u);
+            SendMessageHistory(u);
         }
         else{     //If user is unknown -> connection will be refused
             System.out.println("Connection to " + username + " refused");
@@ -62,6 +64,7 @@ public class ChatWebSocket
         User removeUser = GetByUsername(username);
         removeUser.setSession(null);
         System.out.println(removeUser.getUsername() + " is now offline");
+        SendMessageHistory(removeUser);
     }
 
     @OnError
@@ -75,6 +78,7 @@ public class ChatWebSocket
         Gson g = new Gson();
         Message m = g.fromJson(message, Message.class);
         dbRepository.addMessage(m);
+        messages.add(message);
         broadcast( message, GetGroupFromString(m.getGroup()));
     }
 
@@ -109,8 +113,28 @@ public class ChatWebSocket
                 }
             });
         }
+    }*/
+
+    private void SendMessageHistory(User u){
+        //dbRepository.getMessageHistory(u.getGroups());
+
+        System.out.println(messages.size() + " messages");
+        if(u.getSession() == null) System.out.println("session is null");
+        for(String m : messages){
+            Gson gson = new Gson();
+            Message message = gson.fromJson(m, Message.class);
+            for(Group g : u.getGroups()){
+                if(g.getName().equals(message.getGroup())){
+                    u.getSession().getAsyncRemote().sendObject(m, sendResult -> {
+                        if(sendResult.getException() != null){
+                            System.out.println("Error on MessageHistory");
+                        }
+                    });
+                }
+            }
+        }
     }
-*/
+
     private boolean IsKnown(String username){
         for(User u : users){
             if(u.getUsernameAndPassword().equals(username))return true;
@@ -124,6 +148,8 @@ public class ChatWebSocket
         System.out.println("Error when searching for Username");
         return null;
     }
+
+
 
     private void Init() {
         System.out.println("initializing ...");
