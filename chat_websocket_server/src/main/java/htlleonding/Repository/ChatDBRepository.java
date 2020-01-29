@@ -7,6 +7,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,15 +25,6 @@ public class ChatDBRepository {
 
     private final Executor executor = Executors.newSingleThreadExecutor();
     private List<Message> messageList = new LinkedList<>();
-    /*
-    public List<Message> getMessages(List<Group> groups){
-        String[] stringsGroup = new String[groups.size()];
-        for (int i = 0; i < groups.size(); i++) {
-            stringsGroup[i] = groups.get(i).getName();
-        }
-        CompletableFuture.supplyAsync(() -> {
-                    System.out.println("Getting Messages Async");
-                });
 
 
 
@@ -47,7 +40,7 @@ public class ChatDBRepository {
             performGetMessages(stringsGroup);
             return null;
         }, executor);
-    }*/
+    }
 
     public CompletionStage<Void> addMessage(Message m) {
         return CompletableFuture.supplyAsync(() ->{
@@ -63,14 +56,12 @@ public class ChatDBRepository {
 
     private void performGetMessages(String[] stringsGroup){
         System.out.println("in performGetMessges");
-        TypedQuery<Message> query = em.createQuery("select m from Message m", Message.class);
-        System.out.println("halla");
-        //query.setParameter("groups", stringsGroup);
-        List<Message> result = query.getResultList();
-        for(Message m : result ){
+        javax.persistence.criteria.CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+        cq.select(cq.from(Message.class));
+        messageList = em.createQuery(cq).getResultList();
+        for(Message m : messageList ){
             System.out.println(m.getMsg());
         }
-        messageList = result;
         System.out.println("HALAHLAHLAHLAH");
     }
 }
