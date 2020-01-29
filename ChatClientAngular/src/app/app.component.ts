@@ -46,7 +46,7 @@ export class AppComponent {
     let message: Message = new Message(
       "message",
       this.dataservice.user.username,
-      this.dataservice.user.password,
+      "",
       text,
       this.sendToGroup
     );
