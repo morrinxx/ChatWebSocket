@@ -113,7 +113,7 @@ public class ChatWebSocket
                 }
             });
         }
-    }
+    }*/
 
     private void SendMessageHistory(User u){
         //dbRepository.getMessageHistory(u.getGroups());

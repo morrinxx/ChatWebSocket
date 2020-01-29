@@ -23,17 +23,15 @@ public class ChatDBRepository {
 
     private final Executor executor = Executors.newSingleThreadExecutor();
     private List<Message> messageList = new LinkedList<>();
-/*
-    @Transactional
+    /*
     public List<Message> getMessages(List<Group> groups){
         String[] stringsGroup = new String[groups.size()];
         for (int i = 0; i < groups.size(); i++) {
             stringsGroup[i] = groups.get(i).getName();
         }
-        CompletableFuture.supplyAsync(() ->{
-            System.out.println("Getting Messages Async");
-
-    List<Message> messageList = new LinkedList<>();
+        CompletableFuture.supplyAsync(() -> {
+                    System.out.println("Getting Messages Async");
+                });
 
 
 
@@ -49,7 +47,7 @@ public class ChatDBRepository {
             performGetMessages(stringsGroup);
             return null;
         }, executor);
-    }
+    }*/
 
     public CompletionStage<Void> addMessage(Message m) {
         return CompletableFuture.supplyAsync(() ->{
