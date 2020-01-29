@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
+@Table(name = "Message")
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "chatSeq")
