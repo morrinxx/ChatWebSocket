@@ -9,7 +9,13 @@
     </mat-form-field>
     <br />
     <mat-form-field class="inputDesgin">
-      <input matInput placeholder="Password" [(ngModel)]="user.password" />
+      <input
+        matInput
+        placeholder="Password"
+        type="password"
+        (keyup.enter)="loginIn()"
+        [(ngModel)]="user.password"
+      />
     </mat-form-field>
     <br />
     <br />

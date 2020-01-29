@@ -15,7 +15,6 @@ export class AppComponent {
   wsUri: string = "ws://" + this.ip + ":8080/chat/";
   sendToGroup: string = "school";
   logBuffer: string = "";
-  inMessages: Array<Message> = [];
   myGroups: Array<String> = ["school", "family", "sports", "friends"];
   loginSuccess: Boolean = false;
 
@@ -29,7 +28,7 @@ export class AppComponent {
 
   async delay(ms: number) {
     await new Promise(resolve => setTimeout(() => resolve(), ms)).then(() => {
-      if(this.dataservice.websocket.readyState == 3){
+      if (this.dataservice.websocket.readyState == 3) {
         this.loginSuccess = false;
       }
       if (!this.loginSuccess) {
@@ -51,9 +50,7 @@ export class AppComponent {
       text,
       this.sendToGroup
     );
-    console.log(message);
-    this.inMessages.push(message);
-    this.dataservice.Messages = this.inMessages;
+
     this.dataservice.websocket.send(JSON.stringify(message));
   }
 
@@ -79,8 +76,7 @@ export class AppComponent {
       console.log(message);
       // data message recieved
       if (message.type == "message") {
-        this.inMessages.push(message);
-        this.dataservice.Messages = this.inMessages;
+        this.dataservice.Messages.push(message);
       }
     };
     //onError

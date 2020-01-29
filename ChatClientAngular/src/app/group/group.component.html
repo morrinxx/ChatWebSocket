@@ -1,5 +1,5 @@
 <div *ngFor="let content of messages">
-  <mat-list>
+  <mat-list *ngIf="dataservice.group == content.group">
     <h3
       mat-subheader
       class="usernameStyle"
