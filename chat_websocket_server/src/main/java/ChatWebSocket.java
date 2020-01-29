@@ -42,14 +42,13 @@ public class ChatWebSocket
     public void onOpen(Session session, @PathParam("username") String username) {
         if(!initialized)Init();
         if(IsKnown(username)) {
-            System.out.println("known");
             User u = GetByUsername(username);
             u.setSession(session);
-            System.out.println(u.getUsername() + " is now online");
+            System.out.println("----- WS: " + u.getUsername() + " is now online\n");
             SendMessageHistory(u);
         }
         else{     //If user is unknown -> connection will be refused
-            System.out.println("Connection to " + username + " refused");
+            System.out.println("----- WS: Connection to " + username + " refused\n");
             try {
                 session.close();
             } catch (IOException e) {
@@ -62,23 +61,22 @@ public class ChatWebSocket
 
     @OnClose
     public void onClose(Session session, @PathParam("username") String username) {
-        System.out.println("onclose called");
         User removeUser = GetByUsername(username);
         removeUser.setSession(null);
-        System.out.println(removeUser.getUsername() + " is now offline");
+        System.out.println("----- WS: " + removeUser.getUsername() + " is now offline\n");
         SendMessageHistory(removeUser);
     }
 
     @OnError
     public void onError(Session session, @PathParam("username") String username, Throwable throwable) {
-        System.out.println(username + " had an error: " + throwable.getMessage());
+        System.out.println("----- WS: " + username + " had an error: " + throwable.getMessage() + "\n");
     }
 
     @OnMessage
     public void onMessage(String message, @PathParam("username") String username) {
-        System.out.println(message);
         Gson g = new Gson();
         Message m = g.fromJson(message, Message.class);
+        System.out.println("----- WS: Got message: " + m.getMsg() + "\n");
         dbRepository.addMessage(m);
         broadcast( message, GetGroupFromString(m.getGroup()));
     }
@@ -87,7 +85,7 @@ public class ChatWebSocket
         for(Group g : groups){
             if(g.getName().equals(stringGroup))return g;
         }
-        System.out.println("Gruppe nicht gefunden!");
+        System.out.println("----- WS: Group \"" + stringGroup + "\" not found\n");
         return null;
     }
 
@@ -96,7 +94,7 @@ public class ChatWebSocket
             if (u.getSession() != null) {
                 u.getSession().getAsyncRemote().sendObject(message, sendResult -> {
                     if (sendResult.getException() != null) {
-                        System.out.println("Unable to send message: " + sendResult.getException());
+                        System.out.println("----- WS: Unable to send message: " + sendResult.getException() + "\n");
                     }
                 });
             }
@@ -106,13 +104,13 @@ public class ChatWebSocket
     private CompletableFuture SendMessageHistory(User u){
         return CompletableFuture.supplyAsync(() ->{
             List<Message> dbMessages = dbRepository.getMessageHistory(u.getGroups());
-            if(u.getSession() == null) System.out.println("session is null");
+            if(u.getSession() == null) System.out.println("----- WS: Session is null\n");
             for(Message message : dbMessages){
                 Gson gson = new Gson();
                 String m = gson.toJson(message);
                 u.getSession().getAsyncRemote().sendObject(m, sendResult -> {
                     if(sendResult.getException() != null){
-                        System.out.println("Error in Async SendMessageHistory");
+                        System.out.println("----- WS: Error in Async SendMessageHistory\n");
                     }
                 });
             }
@@ -130,14 +128,15 @@ public class ChatWebSocket
         for(User u : users){
             if(u.getUsernameAndPassword().equals(username))return u;
         }
-        System.out.println("Error when searching for Username");
+        System.out.println("----- WS: Error when searching for User\n");
         return null;
     }
 
 
 
     private void Init() {
-        System.out.println("initializing ...");
+        System.out.println("initializing ..."
+);
         User u1 = new User("Anton", "a");
         User u2 = new User("Franz", "f");
         User u3 = new User("Peter", "p");
@@ -181,6 +180,6 @@ public class ChatWebSocket
         groups.add(g2);
         groups.add(g3);
         initialized = true;
-        System.out.println(users.size() + " users added and " + groups.size() + " groups");
+        System.out.println(users.size() + " users added and " + groups.size() + " groups\n");
     }
 }

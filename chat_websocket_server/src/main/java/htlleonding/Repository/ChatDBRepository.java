@@ -29,19 +29,16 @@ public class ChatDBRepository {
 
 
     public List<Message> getMessageHistory(List<Group> groups) {
-        System.out.println("GetMessageHistory called");
         String[] stringsGroup = new String[groups.size()];
         for (int i = 0; i < groups.size(); i++) {
             stringsGroup[i] = groups.get(i).getName();
         }
-        System.out.println("Getting Messages Async");
-
         return performGetMessages(stringsGroup);
     }
 
     public CompletionStage<Void> addMessage(Message m) {
         return CompletableFuture.supplyAsync(() ->{
-            System.out.println("Adding message async");
+            System.out.println("----- DB: Adding message async\n");
             performInsert(m);
             return null;
         }, executor);
@@ -52,14 +49,10 @@ public class ChatDBRepository {
     }
 
     private List<Message> performGetMessages(String[] stringsGroup){
-        System.out.println("in performGetMessges");
+        System.out.println("----- DB: Getting Messages from DB async\n");
         javax.persistence.criteria.CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
         cq.select(cq.from(Message.class));
         messageList = em.createQuery(cq).getResultList();
-        for(Message m : messageList ){
-            System.out.println(m.getMsg());
-        }
-        System.out.println("HALAHLAHLAHLAH");
         return messageList;
     }
 }
