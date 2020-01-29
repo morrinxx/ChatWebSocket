@@ -1,9 +1,6 @@
 package at.htlleonding.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,6 +13,7 @@ public class Message {
     private String username;
     private String password;
     private String msg;
+    @Column(name = "ChatGroup")
     private String group;
 
     public Message(String type, String username, String password, String msg, String group) {
