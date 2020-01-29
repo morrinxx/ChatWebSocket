@@ -47,7 +47,7 @@ public class ChatDBRepository {
         }, executor);
     }
 
-    private void performInsert(Message m){
+    public void performInsert(Message m){
         em.persist(m);
     }
 

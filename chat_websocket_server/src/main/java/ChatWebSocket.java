@@ -33,8 +33,6 @@ public class ChatWebSocket
 
     List<Group> groups = new LinkedList<>();
 
-    List<String> messages = new LinkedList<>();
-
     private final Executor executor = Executors.newSingleThreadExecutor();
 
     @Inject
@@ -82,7 +80,6 @@ public class ChatWebSocket
         Gson g = new Gson();
         Message m = g.fromJson(message, Message.class);
         dbRepository.addMessage(m);
-        messages.add(message);
         broadcast( message, GetGroupFromString(m.getGroup()));
     }
 
@@ -105,28 +102,14 @@ public class ChatWebSocket
             }
         }
     }
-/*
-    private void initialBroadcast(User u){
-        List<Message> messages = dbRepository.getMessages(u.getGroups());
-
-        for(Message m : messages){
-            System.out.println("halla");
-            u.getSession().getAsyncRemote().sendObject(m, sendResult -> {
-                if (sendResult.getException() != null) {
-                    System.out.println("Unable to send message history from " + u.getUsername() + " with result:  " + sendResult.getException());
-                }
-            });
-        }
-    }*/
 
     private CompletableFuture SendMessageHistory(User u){
         return CompletableFuture.supplyAsync(() ->{
             List<Message> dbMessages = dbRepository.getMessageHistory(u.getGroups());
-            System.out.println(dbMessages.size());
-
-            System.out.println(dbMessages.size() + " messages");
             if(u.getSession() == null) System.out.println("session is null");
-            for(Message m : dbMessages){
+            for(Message message : dbMessages){
+                Gson gson = new Gson();
+                String m = gson.toJson(message);
                 u.getSession().getAsyncRemote().sendObject(m, sendResult -> {
                     if(sendResult.getException() != null){
                         System.out.println("Error in Async SendMessageHistory");
