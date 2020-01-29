@@ -1,5 +1,6 @@
 package Model;
 
+import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,4 +41,5 @@ public class Group {
     public void removeUser(User u){
         this.users.remove(u);
     }
+    
 }

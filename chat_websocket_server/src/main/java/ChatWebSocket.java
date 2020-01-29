@@ -100,7 +100,19 @@ public class ChatWebSocket
                 });
             }
         }
+    }
+/*
+    private void initialBroadcast(User u){
+        List<Message> messages = dbRepository.getMessages(u.getGroups());
 
+        for(Message m : messages){
+            System.out.println("halla");
+            u.getSession().getAsyncRemote().sendObject(m, sendResult -> {
+                if (sendResult.getException() != null) {
+                    System.out.println("Unable to send message history from " + u.getUsername() + " with result:  " + sendResult.getException());
+                }
+            });
+        }
     }
 
     private void SendMessageHistory(User u){
