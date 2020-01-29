@@ -7,6 +7,9 @@ import htlleonding.Repository.ChatDBRepository;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -31,6 +34,8 @@ public class ChatWebSocket
     List<Group> groups = new LinkedList<>();
 
     List<String> messages = new LinkedList<>();
+
+    private final Executor executor = Executors.newSingleThreadExecutor();
 
     @Inject
     ChatDBRepository dbRepository;
@@ -114,24 +119,22 @@ public class ChatWebSocket
         }
     }*/
 
-    private void SendMessageHistory(User u){
-        //dbRepository.getMessageHistory(u.getGroups());
+    private CompletableFuture SendMessageHistory(User u){
+        return CompletableFuture.supplyAsync(() ->{
+            List<Message> dbMessages = dbRepository.getMessageHistory(u.getGroups());
+            System.out.println(dbMessages.size());
 
-        System.out.println(messages.size() + " messages");
-        if(u.getSession() == null) System.out.println("session is null");
-        for(String m : messages){
-            Gson gson = new Gson();
-            Message message = gson.fromJson(m, Message.class);
-            for(Group g : u.getGroups()){
-                if(g.getName().equals(message.getGroup())){
-                    u.getSession().getAsyncRemote().sendObject(m, sendResult -> {
-                        if(sendResult.getException() != null){
-                            System.out.println("Error on MessageHistory");
-                        }
-                    });
-                }
+            System.out.println(dbMessages.size() + " messages");
+            if(u.getSession() == null) System.out.println("session is null");
+            for(Message m : dbMessages){
+                u.getSession().getAsyncRemote().sendObject(m, sendResult -> {
+                    if(sendResult.getException() != null){
+                        System.out.println("Error in Async SendMessageHistory");
+                    }
+                });
             }
-        }
+            return null;
+        }, executor);
     }
 
     private boolean IsKnown(String username){
