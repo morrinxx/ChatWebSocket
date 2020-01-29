@@ -1,9 +1,6 @@
-package at.htlleonding.Model;
+package Model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,11 +8,12 @@ import java.util.List;
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "chatSeq")
-
+    private int id;
     private String type;
     private String username;
     private String password;
     private String msg;
+    @Column(name = "ChatGroup")
     private String group;
 
     public Message(String type, String username, String password, String msg, String group) {
@@ -68,4 +66,17 @@ public class Message {
     public void setMsg(String msg) {
         this.msg = msg;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
 }
+

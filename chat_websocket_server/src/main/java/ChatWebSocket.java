@@ -1,17 +1,16 @@
-package at.htlleonding.websocket;
+import Model.Group;
+import Model.Message;
+import Model.User;
+import com.google.gson.Gson;
+import htlleonding.Repository.ChatDBRepository;
+import javafx.application.Platform;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.json.JsonObject;
-import javax.json.JsonPatch;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -20,15 +19,12 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.Session;
 
-import at.htlleonding.Model.Group;
-import at.htlleonding.Model.Message;
-import at.htlleonding.Model.User;
-import at.htlleonding.Repository.DBService;
-import com.google.gson.Gson;
+
 
 @ServerEndpoint("/chat/{username}")
 @ApplicationScoped
-public class ChatSocket {
+public class ChatWebSocket
+{
     private boolean initialized = false;
 
     List<User> users = new LinkedList<>();
@@ -36,12 +32,12 @@ public class ChatSocket {
     List<Group> groups = new LinkedList<>();
 
     @Inject
-    DBService dbService;
+    ChatDBRepository dbRepository;
 
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) {
         if(!initialized)Init();
-        dbService.createUser();
+        dbRepository.createUser();
         if(IsKnown(username)) {
             System.out.println("known");
             User u = GetByUsername(username);
@@ -70,7 +66,7 @@ public class ChatSocket {
 
     @OnError
     public void onError(Session session, @PathParam("username") String username, Throwable throwable) {
-        System.out.println(username + " had an error " + throwable.getMessage());
+        System.out.println(username + " had an error: " + throwable.getMessage());
     }
 
     @OnMessage
